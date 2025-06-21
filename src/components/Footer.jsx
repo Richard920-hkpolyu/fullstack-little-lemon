@@ -1,5 +1,4 @@
 import { HStack, Heading, VStack, Text, Image, Box, SimpleGrid, useBreakpointValue, Badge} from "@chakra-ui/react";
-import React from "react";
 import FullScreenSection from "../pages/FullScreenSection";
 import { PhoneIcon, EmailIcon } from '@chakra-ui/icons'
 import Logo from "../images/footer_logo.jpg";
@@ -32,7 +31,7 @@ const Introduction = () => {
                 amplitude: 20,
                 speed: 0.15,
                 points: 3
-                }}
+            }}
             />
             <FullScreenSection
             justifyContent="center"

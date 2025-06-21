@@ -1,5 +1,5 @@
 import { Heading, VStack, SimpleGrid} from "@chakra-ui/react";
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import FullScreenSection from "../pages/FullScreenSection";
 import Order from "../components/Order";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

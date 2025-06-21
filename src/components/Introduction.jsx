@@ -1,5 +1,4 @@
-import { HStack, Heading, VStack, Button, Text, useBreakpointValue } from "@chakra-ui/react";
-import React from "react";
+import { Heading, VStack, Button, Text, useBreakpointValue } from "@chakra-ui/react";
 import FullScreenSection from "../pages/FullScreenSection";
 import img1 from "../images/small/Intro_Restaurantfood.jpg";
 import { ChevronRightIcon } from '@chakra-ui/icons';

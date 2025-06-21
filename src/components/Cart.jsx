@@ -13,17 +13,19 @@ import {
     Radio,
     Spacer
 } from "@chakra-ui/react";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import FullScreenSection from "../pages/FullScreenSection";
 import CartItems from "./CartItems";
-import { fooditems,coupons } from "../utils/data";
 import { useScreenSize } from "../context/ScreenSizeContext";
 import { Link } from 'react-router-dom';
 import useSubmit from "../hooks/useSubmit";
 import DeliveryAddress from "./DeliveryAddress"
 import Payment from "./Payment";
+import { coupons } from "../utils/data";
+import { useDispatch, useSelector } from 'react-redux';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
+import { clearCart } from './CartSlice';
 const CustomToastDescription = ({ success }) => {
     return (
         <Text fontSize="lg" fontStyle="italic" lineHeight="1.5">
@@ -43,26 +45,26 @@ const CustomToastDescription = ({ success }) => {
 };
 
 const Cart = () => {
-    const [foodList, setFoodList] = useState([]);
     const [totalPrice, setTotalPrice] = useState(0);
     const [totalCount, setTotalCount] = useState(0);
     const [confirm, setConfirm] = useState(false);
-    const { items, setItems, fireConfetti } = useScreenSize();
-    const { isLoading, submit } = useSubmit();
+    const { fireConfetti } = useScreenSize();
+    const { submit } = useSubmit();
     const toast = useToast();
-    const [discountType, setDiscountType] = useState("");
+    const dispatch = useDispatch();
     const [discountPrice, setDiscountPrice] = useState(0);
     const [discountPercentage, setDiscountPercentage] = useState(0);
     const [selectedCoupon, setSelectedCoupon] = useState("0");
     const numOfCoupon = coupons.length > 2 ? 2 : coupons.length;
     const [visibleCoupons, setVisibleCoupons] = useState(numOfCoupon);
-    const cartFilter = (items) => items.filter(item => item.count !== 0).sort((a, b) => a.id - b.id);
+    const cartFilter = (items) => items.filter(item => item.quantity !== 0).sort((a, b) => a.id - b.id);
     const calculateTotalPrice = (items) => {
         return items.reduce((total, item) => {
-            const price = parseFloat(item.price.replace('$', ''));
-            return total + (price * item.count);
+            const price = item.price;
+            return total + (price * item.quantity);
         }, 0);
     };
+    const cartItems = useSelector(state => state.cart.cartItems);
     const sortedCoupons = coupons.sort((a, b) => {
         // First sort by type
         if (a.type === "exemption" && b.type === "discount") {
@@ -92,55 +94,30 @@ const Cart = () => {
 
         if (selectedId === 0) {
             // If "Without coupons" is selected
-            setDiscountType("");
             setDiscountPrice(0);
             setDiscountPercentage(0);
         } else {
             const selectedCoupon = coupons.find(coupon => coupon.id === selectedId);
 
             if (selectedCoupon) {
-                setDiscountType(selectedCoupon.type);
                 setDiscountPrice(selectedCoupon.price);
                 setDiscountPercentage(selectedCoupon.percentage);
             }
         }
     };
-    const calculateTotalCount = (items) => items.reduce((total, item) => total + item.count, 0);
+    const calculateTotalCount = (items) => items.reduce((total, item) => total + item.quantity, 0);
 
-    const deliveryPrice = (count) => count * 10 + 12;
+    const deliveryPrice = (quantity) => quantity * 10 + 12;
     useEffect(() => {
-        const filteredItems = cartFilter(items);
-        const combinedData = filteredItems
-            .filter(count => fooditems.some(food => food.id === count.id))
-            .map(count => {
-                const food = fooditems.find(food => food.id === count.id);
-                const rowIngredientsPrice = (food.ingredients || []).reduce((total, item) => {
-                    return total + parseFloat(item.price.replace('$', ''));
-                }, 0);
-                const ingredientsPrice = (count.ingredients || []).reduce((total, item) => {
-                    return total + parseFloat(item.price.replace('$', ''));
-                }, 0);
-                const basePrice = parseFloat(food.price.replace("$", ''));
-                const totalItemPrice=basePrice - rowIngredientsPrice + ingredientsPrice;
-                return {
-                    ...food,
-                    count: count.count,
-                    key: count.key,
-                    ingredients: count.ingredients,
-                    price:`${totalItemPrice}`,
-                };
-            });
-        setFoodList(combinedData);
-        setTotalPrice(calculateTotalPrice(combinedData));
-        setTotalCount(calculateTotalCount(combinedData));
-    }, [items]);
-
+        setTotalPrice(calculateTotalPrice(cartItems));
+        setTotalCount(calculateTotalCount(cartItems));
+    }, [cartItems]);
     const handleOrderSubmit = async () => {
-        const orderDetails = { foodList, totalPrice, totalCount };
+        const orderDetails = { cartItems, totalPrice, totalCount };
         try {
             setConfirm(false);
             await submit('https://john.com/contactme', orderDetails);
-            setItems([]);
+            dispatch(clearCart());
             toast({
                 title: <Heading size="md" fontWeight="semibold" lineHeight="1.5">Order Placed.</Heading>,
                 description: <CustomToastDescription success />,
@@ -209,7 +186,7 @@ const Cart = () => {
         </Flex>
         );
     };
-    //console.log("foodList",foodList)
+    
     return (
         <>
         {confirm ? (
@@ -224,25 +201,25 @@ const Cart = () => {
             borderRadius="md"
             width={{ base: "96vw", md: "96vw" }}
         >
-            {foodList.length > 0 ? (
+            {cartItems.length > 0 ? (
                 <>
                     <SimpleGrid columns={{ base: 1, md: 1 }} width="100%">
                         <DeliveryAddress />
                         <Box py={{ base: "0.5rem", md: "0.5rem" }}/>
                         <HStack width="100%" justifyContent="space-between">
                             <Heading size={{base: "md" , md: "lg" }} fontWeight="semibold" color="#333333">
-                                Total Items ({totalCount})
+                                Total Items ({cartItems.length})
                             </Heading>
                             <Heading size={{base: "md" , md: "lg" }} fontWeight="semibold" color="#333333" textAlign="right">
                                 Price
                             </Heading>
                         </HStack>
                         <Box py={{ base: "0.5rem", md: "0.5rem" }}/>
-                        {foodList.map(food => (
+                        {cartItems.map(food => (
                             <CartItems
                                 {...food}
-                                key={food.key}
-                                imageSrc={food.getImageSrc()}
+                                key={food.id}
+                                imageSrc={food.imageSrc}
                                 ingredients={food.ingredients}
                             />
                         ))}
@@ -253,7 +230,7 @@ const Cart = () => {
                         <Box py={{ base: "0.5rem", md: "0.5rem" }}/>
                         <VStack minWidth="41vw">
                             <Heading size={{base: "md" , md: "lg" }} fontWeight="semibold" color="#333333"alignSelf="start">Discount</Heading>
-                            <RadioGroup color="#333333" borderColor="#333333" onChange={(e) => setDiscount(e)} value={selectedCoupon.toString()} width="100%" >
+                            <RadioGroup color="#333333" borderColor="#333333" onChange={(e) => setDiscount(e)} value={selectedCoupon.toString()} width="100%"  >
                                 <HStack key={0} width="100%">
                                     <label htmlFor={`coupon-0`}>
                                         <Text fontSize={{ base: "md", md: "lg" }} color="#333333" align="start" width="70vw" lineHeight={{ base: "shorter", md: "short" }}>

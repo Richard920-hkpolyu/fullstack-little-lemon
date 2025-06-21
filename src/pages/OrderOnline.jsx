@@ -1,5 +1,5 @@
 import { Heading, VStack, SimpleGrid } from "@chakra-ui/react";
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import FullScreenSection from "../pages/FullScreenSection";
 import MenuSection from "../components/MenuSection";
 import { useScreenSize } from "../context/ScreenSizeContext";

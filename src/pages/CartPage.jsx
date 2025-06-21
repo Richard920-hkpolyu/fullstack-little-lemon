@@ -1,5 +1,5 @@
 import { SimpleGrid, Heading, VStack } from "@chakra-ui/react";
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import FullScreenSection from "../pages/FullScreenSection";
 import Cart from "../components/Cart";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -14,7 +14,7 @@ const CartPage = () => {
     useEffect(() => {
         setPage('cart');
         const scrollToTopTimeout = setTimeout(handleScrollToTop, 300);
-        return () => clearTimeout(scrollToTopTimeout); // Cleanup timeout on unmount
+        return () => clearTimeout(scrollToTopTimeout);
     }, []);
 
     return (

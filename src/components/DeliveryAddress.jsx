@@ -1,5 +1,5 @@
 import { VStack, HStack, Text, Menu, MenuButton, MenuList, MenuItem, Button } from "@chakra-ui/react";
-import React, { useState } from "react";
+import { useState } from "react";
 import FullScreenSection from "../pages/FullScreenSection";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLocationDot, faUser, faPhone, faChevronDown } from '@fortawesome/free-solid-svg-icons';

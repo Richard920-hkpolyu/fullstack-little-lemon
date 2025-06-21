@@ -1,9 +1,13 @@
 import { HStack, Heading, VStack, Text, Image, Button, Flex, Badge } from "@chakra-ui/react";
-import React, { useEffect, useState,  } from "react";
-import { useNavigate,  } from "react-router-dom";
-import { useScreenSize } from "../context/ScreenSizeContext";
+import { useEffect, useState, } from "react";
+import { useNavigate, } from "react-router-dom";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
+
+import { useDispatch, useSelector } from 'react-redux';
+import { addItemToCart, increaseItemQuantity, decreaseItemQuantity } from './CartSlice';// Action to add product to cart
+
 const Card = ({ id, title, category, type, monthly, ingredients, description, price, imageSrc }) => {
     const dataToPass = {
         id: id,
@@ -16,31 +20,39 @@ const Card = ({ id, title, category, type, monthly, ingredients, description, pr
         price: price,
         imageSrc: imageSrc,
     };
-    const { modifyItems, items } = useScreenSize();
-    const findCountById = (items, id) => {
-        const item = items.find((item) => item.id === id);
-        return item ? item.count : undefined;
+
+    const [newId, setNewId] = useState(generateId(id,ingredients));
+    const dispatch = useDispatch();
+    const cartItems = useSelector(state => state.cart.cartItems); // Get cart items globally//cart: createSlice name, cartItems: initialState name
+    const item = cartItems.find(item => item.id === newId);
+    const handleAddToCart = product => {
+      dispatch(addItemToCart(product));// Add product to cart
+      console.log("product:",product);
     };
-    const foundCount = findCountById(items, id);
+    const handleIncreaseQuantity = itemId => {
+      dispatch(increaseItemQuantity(itemId));
+      console.log("itemId:",itemId);
+    };
+    const handleDecreaseQuantity = itemId => {
+      dispatch(decreaseItemQuantity(itemId));
+      console.log("itemId:",itemId);
+    };
+
 
     const navigate = useNavigate();
     const handleNavigate = () => {
         navigate(`/order-online/order/${title.replace(/ /g, "")}`, { state: dataToPass });
     };
-    const [count, setCount] = useState(foundCount !== undefined ? foundCount : 0);
-
-    const handleIncrement = () => {
-        setCount(count + 1);
-      };
-    const handleDecrement = () => {
-        if (count > 0) {
-          setCount(count - 1);
-        }
-    };
 
     useEffect(() => {
-        modifyItems(id, count, ingredients);
-    }, [id,count]);
+        setNewId(generateId(id,ingredients));
+    }, [item]);
+
+    function generateId(id, ingredients) {
+        const ids = ingredients.map(ingredient => ingredient.id);
+        const idMap = [1, 2, 3].filter(x => ids.includes(x)).join('');
+        return id * 1000 + (idMap ? parseInt(idMap, 10) : 0);
+    }
     return(
         <HStack
             color="#333333"
@@ -56,19 +68,32 @@ const Card = ({ id, title, category, type, monthly, ingredients, description, pr
                     {description}
                 </Text>
                 <Flex justify="space-between" align="center" width="100%">
-                    <Text size={{ base: "md", md: "lg" }} fontWeight="medium" color="#333333">{price}</Text>
-                    {count > 0 && true ? (
+                    <Text size={{ base: "md", md: "lg" }} fontWeight="medium" color="#333333">${price}</Text>
+                    {item ? (
                         <HStack alignSelf="center" gap={{ base: '5px', md: '8px' }}>
-                            <Button onClick={handleDecrement} width={{ base: '4px' }}>
+                            <Button onClick={() => handleDecreaseQuantity(newId)} width={{ base: '4px' }}>
                                 <FontAwesomeIcon icon={faMinus} color="#333333"/>
                             </Button>
-                            <Text color="#333333" fontSize={{ base: 'md', md: 'lg' }}>{count}</Text>
-                            <Button onClick={handleIncrement} width={{ base: '4px' }}>
+                            <Text color="#333333" fontSize={{ base: 'md', md: 'lg' }}>{item.quantity}</Text>
+                            <Button onClick={() => handleIncreaseQuantity(newId)} width={{ base: '4px' }}>
                                 <FontAwesomeIcon icon={faPlus} color="#333333"/>
                             </Button>
                         </HStack>
                     ) : (
-                        <Button colorScheme="yellow" width="50%" onClick={handleIncrement}><span style={{ color: '#333333' }}>&nbsp;Add +&nbsp;</span></Button>
+                        <Button colorScheme="yellow" width="50%" onClick={() =>
+                            handleAddToCart({
+                            id: newId,
+                            key : newId,
+                            title: title,
+                            category: category,
+                            type: type,
+                            monthly: monthly,
+                            ingredients: ingredients,
+                            description: description,
+                            price: price,
+                            imageSrc: imageSrc,
+                        })
+                        }><span style={{ color: '#333333' }}>&nbsp;Add +&nbsp;</span></Button>
                     )}
                 </Flex>
             </VStack>

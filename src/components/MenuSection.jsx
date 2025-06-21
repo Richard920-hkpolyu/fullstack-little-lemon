@@ -1,13 +1,10 @@
 import { Heading, Button, ButtonGroup, SimpleGrid } from "@chakra-ui/react";
-import React, { useState,  } from "react";
+import { useState,  } from "react";
 import FullScreenSection from "../pages/FullScreenSection";
 import Card from "./Card";
 import { fooditems, } from "../utils/data";
 
 const MenuSection = () => {
-
-    //buttonElement.style.backgroundColor = "#495E57" ;
-    //buttonElement.style.color = "#495E57" ;
     const [foodList, setFoodList] = useState(fooditems);
     const [buttonSelect, setButtonSelect] = useState("All");
     const buttons = [

@@ -14,7 +14,7 @@ import {
     Text,
     Box
 } from "@chakra-ui/react";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import FullScreenSection from "../pages/FullScreenSection";
 import { useFormik } from "formik";
 import * as Yup from 'yup';

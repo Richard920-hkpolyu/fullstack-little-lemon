@@ -1,18 +1,20 @@
 import { HStack, Heading, VStack, Button, Text, Image, useMediaQuery, Box } from "@chakra-ui/react";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import img1 from "../images/Delivery.jpg";
 import { Link, useLocation } from 'react-router-dom';
 import { DeleteIcon, AddIcon, MinusIcon, ArrowBackIcon } from '@chakra-ui/icons';
-import { useScreenSize } from "../context/ScreenSizeContext";
 import FullScreenSection from "../pages/FullScreenSection";
+
+import { useDispatch, useSelector } from 'react-redux';
+import { addItemToCart, increaseItemQuantity } from './CartSlice';// Action to add product to cart
+
 
 const Order = () => {
     const [isMobile] = useMediaQuery("(max-width: 28em)");
-    const { modifyItems, items } = useScreenSize();
     const location = useLocation();
     const { state } = location || {};
 
-    const {
+    let {
         id = 0,
         title = "Default Title",
         category = "Default Category",
@@ -23,59 +25,78 @@ const Order = () => {
         price = 0,
         imageSrc = ""
     } = state || {};
+    if(id>1000){
+        id=Math.floor(id/1000);
+    }
+    function generateId(id, ingredients) {
+        const ids = ingredients.map(ingredient => ingredient.id);
+        const idMap = [1, 2, 3].filter(x => ids.includes(x)).join('');
 
-    const [addIngredients, setAddIngredients] = useState(ingredients);
-    const [count, setCount] = useState(1);
-    const [totalPrice, setTotalPrice] = useState(price);
-
-    const findIngredientsById = (items, id) => {
-        const item = items.find(item => item.id === id);
-        return item ? item.ingredients : [];
-    };
-
-    const findCountById = (items, id, addIngredients) => {
-        const item = items.find(item =>
-            item.id === id &&
-            item.ingredients.length === addIngredients.length &&
-            item.ingredients.every(ingredient =>
-                addIngredients.some(addIngredient => addIngredient.name === ingredient.name)
-            )
-        );
-        return item ? item.count : 0;
-    };
-
-    const foundCount = findCountById(items, id, addIngredients);
-
-    useEffect(() => {
-        const ingredientsFromItems = findIngredientsById(items, id);
-        setAddIngredients(ingredientsFromItems.length > 0 ? ingredientsFromItems : ingredients);
-    }, [id, items, ingredients]);
-
-    useEffect(() => {
-        // Calculate the total price of the ingredients
-        const ingredientsPrice = addIngredients.reduce((total, item) => {
-            return total + parseFloat(item.price.replace('$', ''));
-        }, 0);
-        const rowIngredientsPrice = ingredients.reduce((total, item) => {
-            return total + parseFloat(item.price.replace('$', ''));
-        }, 0);
-        // Calculate the total price based on the price of the item and the number of items, minus the ingredients price
-        const basePrice = parseFloat(price.replace("$", ""));
-        setTotalPrice(((count * basePrice) + ingredientsPrice - rowIngredientsPrice).toFixed(2));
-    }, [count, addIngredients, price]);
-
+        return id * 1000 + (idMap ? parseInt(idMap, 10) : 0);
+    }
+    const dispatch = useDispatch();
+    const cartItems = useSelector(state => state.cart.cartItems);
     const handleIncrement = () => setCount(prevCount => prevCount + 1);
     const handleDecrement = () => setCount(prevCount => Math.max(prevCount - 1, 1));
+    const [addIngredients, setAddIngredients] = useState(ingredients);
+    const [count, setCount] = useState(1);
+    const [newPrice,setNewPrice] = useState(price);
+    const [totalPrice, setTotalPrice] = useState(price);
+    const [newId, setNewId] = useState(generateId(id,addIngredients));
     const handleDelete = (ingredientName) => {
         setAddIngredients(prevIngredients =>
             prevIngredients.filter(ingredient => ingredient.name !== ingredientName)
         );
     };
+    const handleAddToCart = product => {
+          dispatch(addItemToCart(product));// Add product to cart
+        };
+    const handleIncreaseQuantity = itemId => {
+          dispatch(increaseItemQuantity(itemId));
+        };
 
-    const buttonEvent = () => {
-        modifyItems(id, foundCount + count, addIngredients);
+    useEffect(() => {
+        setNewId(generateId(id,addIngredients));
+        const ingredientsPrice = addIngredients.reduce((total, item) => {
+            return total + item.price;
+        }, 0);
+        const rowIngredientsPrice = ingredients.reduce((total, item) => {
+            return total + item.price;
+        }, 0);
+        // Calculate the total price based on the price of the item and the number of items, minus the ingredients price
+        const basePrice = price;
+        setNewPrice(basePrice+ingredientsPrice-rowIngredientsPrice);
+        setTotalPrice(((count * basePrice) + ingredientsPrice - rowIngredientsPrice).toFixed(2));
+    }, [count, addIngredients, price]);
+
+    const addEvent = () => {
+        const item = cartItems.find(item => item.id === newId);
+
+        if (item) {
+            for (let i = 0; i < count; i++) {
+                handleIncreaseQuantity(newId);
+            }
+        } else {
+            handleAddToCart({
+                id: newId,
+                key: newId,
+                title,
+                category,
+                type,
+                monthly,
+                ingredients: addIngredients,
+                description,
+                price: newPrice,
+                imageSrc,
+            });
+
+            for (let i = 1; i < count; i++) {
+                handleIncreaseQuantity(newId);
+            }
+        }
+
         setCount(1);
-    };
+};
 
     const renderImage = () => (
         <Box paddingTop={{ base: "0", sm: "4rem", md: "2.5rem" }}>
@@ -102,13 +123,12 @@ const Order = () => {
             {addIngredients.map((item, index) => (
                 <HStack key={index} width="100%" justifyContent="space-between">
                     <Text color="#333333" fontSize="md" width="10rem">{item.name}</Text>
-                    <Text color="#333333" fontSize="md" width="7rem">{item.price}</Text>
+                    <Text color="#333333" fontSize="md" width="7rem">${item.price.toFixed(2)}</Text>
                     <DeleteIcon onClick={() => handleDelete(item.name)} color="#333333" width={{ base: "5rem", md: "5rem" }} _hover={{ backgroundColor: '#FCF5CF', cursor: 'pointer', borderRadius: 'md' }}/>
                 </HStack>
             ))}
         </VStack>
     );
-
     return (
         <FullScreenSection
             justifyContent="center"
@@ -145,7 +165,7 @@ const Order = () => {
                                 <Text color="#333333" fontSize={{ base: "md", md: "lg" }}>{count}</Text>
                                 <Button onClick={handleIncrement}><AddIcon color="#333333" /></Button>
                             </HStack>
-                            <Button colorScheme="yellow" alignSelf="center" width="full" onClick={buttonEvent}>
+                            <Button colorScheme="yellow" alignSelf="center" width="full" onClick={addEvent}>
                                 Add for ${totalPrice}
                             </Button>
                             <br />
@@ -177,7 +197,7 @@ const Order = () => {
                                 <Text color="#333333" fontSize={{ base: "md", md: "lg" }}>{count}</Text>
                                 <Button onClick={handleIncrement}><AddIcon color="#333333" /></Button>
                             </HStack>
-                            <Button colorScheme="yellow" alignSelf="center" width="full" onClick={buttonEvent}>
+                            <Button colorScheme="yellow" alignSelf="center" width="full" onClick={addEvent}>
                                 Add for ${totalPrice}
                             </Button>
                             <br />

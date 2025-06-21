@@ -1,9 +1,11 @@
 import { HStack, Heading, VStack, Text, Image, Button, SimpleGrid, Box } from "@chakra-ui/react";
-import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useScreenSize } from "../context/ScreenSizeContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
+
+import { useDispatch, useSelector } from 'react-redux';
+import { increaseItemQuantity, decreaseItemQuantity } from './CartSlice';// Action to add product to cart
+
 const CartItems = ({ id, title, category, type, monthly, ingredients, description, price, imageSrc }) => {
     const navigate = useNavigate();
     const handleNavigate = () => {
@@ -20,31 +22,16 @@ const CartItems = ({ id, title, category, type, monthly, ingredients, descriptio
         price: price,
         imageSrc: imageSrc,
     };
-    const { modifyItems, items } = useScreenSize();
-    const ingredientsNames = ingredients.map(item => item.name).join(', ');
-    const findCountById = (items, id, addIngredients) => {
-        const item = items.find((item) => item.id === id &&
-            item.ingredients.length === addIngredients.length &&
-            item.ingredients.every(ingredient =>
-                addIngredients.some(addIngredient => addIngredient.name === ingredient.name)
-            )
-        );
-        //console.log("item",item);
-        return item ? item.count : 0;
+    const dispatch = useDispatch();
+    const cartItems = useSelector(state => state.cart.cartItems); // Get cart items globally//cart: createSlice name, cartItems: initialState name
+    const item = cartItems.find(item => item.id === id);
+    const handleIncreaseQuantity = itemId => {
+          dispatch(increaseItemQuantity(itemId));
     };
-    const initialCount = findCountById(items, id, ingredients);
-
-
-
-    //const initialCount = items.find(item => item.id === id)?.count || 0;
-    const [count, setCount] = useState(initialCount);
-
-    useEffect(() => {
-        modifyItems(id, count,ingredients);
-    }, [id, count, modifyItems]);
-
-    const handleIncrement = () => setCount(prevCount => prevCount + 1);
-    const handleDecrement = () => setCount(prevCount => Math.max(prevCount - 1, 0));
+    const handleDecreaseQuantity = itemId => {
+          dispatch(decreaseItemQuantity(itemId));
+    };
+    const ingredientsNames = ingredients.map(item => item.name).join(', ');
     return (
         <>
         <HStack
@@ -86,13 +73,13 @@ const CartItems = ({ id, title, category, type, monthly, ingredients, descriptio
                     {ingredientsNames}
                 </Text>
                 <SimpleGrid columns={1} spacing={5} alignSelf="start" py={{ base: 0, md: 5 }} width="100%">
-                    {count > 0 ? (
+                    {item ? (
                         <HStack alignSelf="center" gap={{ base: '5px', md: '8px' }} ml="-10px">
-                            <Button onClick={handleDecrement} width={{ base: '4px' }}>
+                            <Button onClick={() => handleDecreaseQuantity(id)} width={{ base: '4px' }}>
                                 <FontAwesomeIcon icon={faMinus} color="#333333"/>
                             </Button>
-                            <Text color="#333333" fontSize={{ base: 'md', md: 'lg' }}>{count}</Text>
-                            <Button onClick={handleIncrement} width={{ base: '4px' }}>
+                            <Text color="#333333" fontSize={{ base: 'md', md: 'lg' }}>{item.quantity}</Text>
+                            <Button onClick={() => handleIncreaseQuantity(id)} width={{ base: '4px' }}>
                                 <FontAwesomeIcon icon={faPlus} color="#333333"/>
                             </Button>
                         </HStack>
@@ -103,7 +90,7 @@ const CartItems = ({ id, title, category, type, monthly, ingredients, descriptio
             </VStack>
             <VStack alignItems="right" width="20vw">
                 <Text size={{ base: "md", md: "lg" }} fontWeight="semibold" color="#FC2063" textAlign="right">
-                    {(parseFloat(price.replace("$", "")) * count).toFixed(2)}
+                    ${(price * item.quantity).toFixed(2)}
                 </Text>
             </VStack>
         </HStack>

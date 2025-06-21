@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import Introduction from "../components/Introduction";
 import MenuSection from "../components/MenuSection";
 import { useScreenSize } from "../context/ScreenSizeContext";
@@ -10,7 +10,7 @@ const Homepage = () => {
     useEffect(() => {
         setPage('homepage');
         const scrollToTopTimeout = setTimeout(handleScrollToTop, 300);
-        return () => clearTimeout(scrollToTopTimeout); // Cleanup timeout on unmount
+        return () => clearTimeout(scrollToTopTimeout);
     }, []);
 
     return(

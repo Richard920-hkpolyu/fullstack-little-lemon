@@ -1,5 +1,5 @@
 import { VStack, HStack, Text, Spacer } from "@chakra-ui/react";
-import React, { useState } from "react";
+import { useState } from "react";
 import FullScreenSection from "../pages/FullScreenSection";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Radio, RadioGroup } from "@chakra-ui/react/radio"

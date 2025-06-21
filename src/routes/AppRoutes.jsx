@@ -1,11 +1,8 @@
-import React from "react";
 import Homepage from "../pages/Homepage";
 import OrderPage from "../pages/OrderPage";
 import OrderOnline from "../pages/OrderOnline";
-//import Payment from "./components/Payment";
 import ReservationPage from "../pages/ReservationPage";
 import CartPage from "../pages/CartPage";
-//import SignIn from "./components/SignIn";
 import {Routes, Route, } from 'react-router-dom';
 import Login from "../components/Login";
 import Loading from "../pages/Loading";

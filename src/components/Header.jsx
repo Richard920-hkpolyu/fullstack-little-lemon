@@ -2,11 +2,12 @@ import { Box, HStack, Image, Menu,
     MenuButton,
     MenuList,
     MenuItem, useDisclosure, Button, Text } from "@chakra-ui/react";
-import React, { useEffect, useRef, useState} from "react";
+import { useEffect, useRef, useState} from "react";
 import Logo from "../images/Header_Logo.png";
 import {Link} from 'react-router-dom';
 import { useScreenSize } from "../context/ScreenSizeContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useSelector } from 'react-redux';
 import { faBasketShopping, faHouse, faBars, faBowlFood, faTruck,faUser } from '@fortawesome/free-solid-svg-icons';
 const Header = () => {
     const headerRef = useRef(null);
@@ -14,6 +15,7 @@ const Header = () => {
     const handleClick = () => {
         isOpen ? onClose() : onOpen();
     };
+    const cartItems = useSelector(state => state.cart.cartItems);
     useEffect(() => {
         let prevScrollPos = window.scrollY;
         const threshold = 120;
@@ -22,44 +24,29 @@ const Header = () => {
             const headerElement = headerRef.current;
             if (!headerElement) return;
 
-            // Check if the user is at the top of the page
             if (currentScrollPos < threshold) {
                 headerElement.style.transform = "translateY(0)";
-            } else if (prevScrollPos > currentScrollPos) {//scroll up
+            } else if (prevScrollPos > currentScrollPos) {
                 headerElement.style.transform = "translateY(0)";
             } else {
                 headerElement.style.transform = "translateY(-200px)";
             }
             prevScrollPos = currentScrollPos;
         };
-        window.addEventListener('scroll', handleScroll); // type, listener
-        return () => { // Clean up resources to improve app responsiveness
+        window.addEventListener('scroll', handleScroll);
+        return () => {
             window.removeEventListener('scroll', handleScroll);
         };
-    }, []);//在效果完成後執行一次,第二個輸入項目是e.g.當[]改變時執行
-//var handleClick = function(anchor) {
-//  return function() {};
-//};
-    // const handleClick = (anchor) => () => {
-    //     const id = `${anchor}-section`;
-    //     const element = document.getElementById(id);
-    //     if(element){
-    //         element.scrollIntoView({
-    //             behavior: "smooth",
-    //             block: "start",
-    //         });
-    //     }
-    // };
+    }, []);
     const { isOpen, onOpen, onClose } = useDisclosure();
-    const { items, page } = useScreenSize();
+    const { page } = useScreenSize();
     const totalCount = (items) => {
-        return items.reduce((total, item) => total + item.count, 0);
+        return items.reduce((total, item) => total + item.quantity, 0);
     };
     useEffect(() => {
-        //console.log("items222:",items);
-        setCartCount(totalCount(items));
+        setCartCount(totalCount(cartItems));
         headerRef.current.style.transform = "translateY(0)";
-    },[items]);
+    },[cartItems]);
 
     return (
         <Box
