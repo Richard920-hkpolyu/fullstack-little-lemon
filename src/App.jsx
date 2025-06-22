@@ -1,6 +1,3 @@
-//import About from "./components/About";
-//import Footer from "./components/Footer";
-//import Header from "./components/Header";
 import { Suspense, lazy, useEffect } from "react";
 const Header = lazy(() => import("./components/Header"));
 const Footer = lazy(() => import("./components/Footer"));
@@ -13,7 +10,9 @@ import Lenis from '@studio-freight/lenis';//smooth scrolling
 
 const App=()=> {
   useEffect(() => {
-    const lenis = new Lenis();// Initialize Lenis for smooth scrolling
+    const lenis = new Lenis({
+        duration: 0.55, // Set smooth scroll duration to 0.3 seconds
+    });// Initialize Lenis for smooth scrolling
     function raf(time) {
       lenis.raf(time);// Update Lenis with the current frame time
       requestAnimationFrame(raf);// Request the next animation frame

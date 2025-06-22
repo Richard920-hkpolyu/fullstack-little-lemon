@@ -27,15 +27,12 @@ const Card = ({ id, title, category, type, monthly, ingredients, description, pr
     const item = cartItems.find(item => item.id === newId);
     const handleAddToCart = product => {
       dispatch(addItemToCart(product));// Add product to cart
-      console.log("product:",product);
     };
     const handleIncreaseQuantity = itemId => {
       dispatch(increaseItemQuantity(itemId));
-      console.log("itemId:",itemId);
     };
     const handleDecreaseQuantity = itemId => {
       dispatch(decreaseItemQuantity(itemId));
-      console.log("itemId:",itemId);
     };
 
 

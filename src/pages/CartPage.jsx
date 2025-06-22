@@ -7,14 +7,10 @@ import { faOpencart } from "@fortawesome/free-brands-svg-icons";
 import { useScreenSize } from "../context/ScreenSizeContext";
 import Wave from 'react-wavify';
 const CartPage = () => {
-    const handleScrollToTop = () => {
-        window.scrollTo({ top: 0, behavior: "smooth" });
-    };
     const { setPage } = useScreenSize();
     useEffect(() => {
         setPage('cart');
-        const scrollToTopTimeout = setTimeout(handleScrollToTop, 300);
-        return () => clearTimeout(scrollToTopTimeout);
+        window.scrollTo(0, 0);
     }, []);
 
     return (

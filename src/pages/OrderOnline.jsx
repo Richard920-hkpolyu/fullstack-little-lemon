@@ -7,14 +7,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMotorcycle, } from '@fortawesome/free-solid-svg-icons';
 import Wave from 'react-wavify';
 const OrderOnline = () => {
-    const handleScrollToTop = () => {
-        window.scrollTo({ top: 0, behavior: "smooth" });
-    };
     const { setPage } = useScreenSize();
     useEffect(() => {
         setPage('orderonline');
-        const scrollToTopTimeout = setTimeout(handleScrollToTop, 300);
-        return () => clearTimeout(scrollToTopTimeout); // Cleanup timeout on unmount
+        window.scrollTo(0, 0);
     }, []);
 
     return (

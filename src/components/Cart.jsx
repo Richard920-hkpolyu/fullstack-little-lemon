@@ -126,7 +126,7 @@ const Cart = () => {
                 isClosable: true,
             });
             fireConfetti();
-            setTimeout(() => window.scrollTo({ top: 0, behavior: "smooth" }), 300);
+            window.scrollTo(0, 0);
         } catch {
             setConfirm(false);
             toast({

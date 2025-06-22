@@ -8,14 +8,10 @@ import Wave from 'react-wavify';
 
 const LoginPage = ({ isSignUp }) => {
     const { setPage } = useScreenSize();
-    const handleScrollToTop = () => {
-        window.scrollTo({ top: 0, behavior: "smooth" });
-    };
 
     useEffect(() => {
         setPage('login');
-        const scrollToTopTimeout = setTimeout(handleScrollToTop, 300);
-        return () => clearTimeout(scrollToTopTimeout); // Cleanup timeout on unmount
+       window.scrollTo(0, 0);
     }, []);
 
     return (
