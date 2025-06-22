@@ -96,6 +96,7 @@ const Order = () => {
         }
 
         setCount(1);
+        setAddIngredients(ingredients);
 };
 
     const renderImage = () => (
