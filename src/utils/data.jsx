@@ -14,11 +14,11 @@ export const socials = [
     },
     {
         icon: faGithub,
-        url: "https://github.com/Richard920-hkpolyu",
+        url: "https://github.com/Richard920-hkpolyu/fullstack-little-lemon",
     },
     {
         icon: faLinkedin,
-        url: "https",
+        url: "",
     },
 ];
 
