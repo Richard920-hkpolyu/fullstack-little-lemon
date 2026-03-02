@@ -1,0 +1,12 @@
+:root {
+  --primary-green: #495e57;
+  --primary-yellow: #f4ce14;
+  --secondary-orange: #ee9972;
+  --secondary-light: #fbdabb;
+  --highlight-light: #edefee;
+  --highlight-dark: #333;
+  --white: #fff;
+  --black: #000;
+  --font-display: "Markazi Text", "Georgia", serif;
+  --font-body: "Karla", "Helvetica Neue", sans-serif;
+}

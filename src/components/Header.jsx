@@ -1,14 +1,16 @@
-import { Box, HStack, Image, Menu,
+import {
+    Box, HStack, Image, Menu,
     MenuButton,
     MenuList,
-    MenuItem, useDisclosure, Button, Text } from "@chakra-ui/react";
-import { useEffect, useRef, useState} from "react";
+    MenuItem, useDisclosure, Button, Text
+} from "@chakra-ui/react";
+import { useEffect, useRef, useState } from "react";
 import Logo from "../images/Header_Logo.png";
-import {Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useScreenSize } from "../context/ScreenSizeContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useSelector } from 'react-redux';
-import { faBasketShopping, faHouse, faBars, faBowlFood, faTruck,faUser } from '@fortawesome/free-solid-svg-icons';
+import { faBasketShopping, faHouse, faBars, faBowlFood, faTruck, faUser } from '@fortawesome/free-solid-svg-icons';
 const Header = () => {
     const headerRef = useRef(null);
     const [cartCount, setCartCount] = useState(0);
@@ -46,7 +48,7 @@ const Header = () => {
     useEffect(() => {
         setCartCount(totalCount(cartItems));
         headerRef.current.style.transform = "translateY(0)";
-    },[cartItems]);
+    }, [cartItems]);
 
     return (
         <Box
@@ -78,7 +80,7 @@ const Header = () => {
                                 }
                             }}
                         >
-                            <FontAwesomeIcon icon={faBars} color="#333333" size="2x"/>
+                            <FontAwesomeIcon icon={faBars} color="#333333" size="2x" />
                         </MenuButton>
                         <MenuList
                             transition="opacity 0.3s ease-in-out, transform 0.3s ease-in-out"
@@ -89,30 +91,30 @@ const Header = () => {
                             onMouseEnter={onOpen}
                             onMouseLeave={onClose}
                             onClick={onClose}>
-                            <Link to="/"><MenuItem borderRadius="lg" _hover={{color:"#EDEFEE", backgroundColor:"#495E57"}} backgroundColor={page === 'homepage' ? "#495E57" : null} color={page === 'homepage' ? "#FFFFFF" : null}><FontAwesomeIcon icon={faHouse} size="1x"/>&nbsp;Homepage</MenuItem></Link>
-                            <Link to="/reservation"><MenuItem borderRadius="lg" _hover={{color:"#EDEFEE", backgroundColor:"#495E57"}} backgroundColor={page === 'reservation' ? "#495E57" : null} color={page === 'reservation' ? "#FFFFFF" : null}><FontAwesomeIcon icon={faBowlFood} size="1x"/>&nbsp;Reserve a Table</MenuItem></Link>
-                            <Link to="/order-online"><MenuItem borderRadius="lg" _hover={{color:"#EDEFEE", backgroundColor:"#495E57"}} backgroundColor={page === 'orderonline' ? "#495E57" : null} color={page === 'orderonline' ? "#FFFFFF" : null}><FontAwesomeIcon icon={faTruck} size="1x"/>&nbsp;Order Online</MenuItem></Link>
-                            <Link to="/cart"><MenuItem borderRadius="lg" _hover={{color:"#EDEFEE", backgroundColor:"#495E57"}} backgroundColor={page === 'cart' ? "#495E57" : null} color={page === 'cart' ? "#FFFFFF" : null}><FontAwesomeIcon icon={faBasketShopping} size="1x"/>&nbsp;Cart</MenuItem></Link>
-                            <Link to="/login"><MenuItem borderRadius="lg" _hover={{color:"#EDEFEE", backgroundColor:"#495E57"}} backgroundColor={page === 'login' ? "#495E57" : null} color={page === 'login' ? "#FFFFFF" : null}><FontAwesomeIcon icon={faUser} size="1x"/>&nbsp;Login</MenuItem></Link>
+                            <Link to="/"><MenuItem borderRadius="lg" _hover={{ color: "#EDEFEE", backgroundColor: "#495E57" }} backgroundColor={page === 'homepage' ? "#495E57" : null} color={page === 'homepage' ? "#FFFFFF" : null}><FontAwesomeIcon icon={faHouse} size="1x" />&nbsp;Homepage</MenuItem></Link>
+                            <Link to="/reservation"><MenuItem borderRadius="lg" _hover={{ color: "#EDEFEE", backgroundColor: "#495E57" }} backgroundColor={page === 'reservation' ? "#495E57" : null} color={page === 'reservation' ? "#FFFFFF" : null}><FontAwesomeIcon icon={faBowlFood} size="1x" />&nbsp;Reserve a Table</MenuItem></Link>
+                            <Link to="/order-online"><MenuItem borderRadius="lg" _hover={{ color: "#EDEFEE", backgroundColor: "#495E57" }} backgroundColor={page === 'orderonline' ? "#495E57" : null} color={page === 'orderonline' ? "#FFFFFF" : null}><FontAwesomeIcon icon={faTruck} size="1x" />&nbsp;Order Online</MenuItem></Link>
+                            <Link to="/cart"><MenuItem borderRadius="lg" _hover={{ color: "#EDEFEE", backgroundColor: "#495E57" }} backgroundColor={page === 'cart' ? "#495E57" : null} color={page === 'cart' ? "#FFFFFF" : null}><FontAwesomeIcon icon={faBasketShopping} size="1x" />&nbsp;Cart</MenuItem></Link>
+                            <Link to="/login"><MenuItem borderRadius="lg" _hover={{ color: "#EDEFEE", backgroundColor: "#495E57" }} backgroundColor={page === 'login' ? "#495E57" : null} color={page === 'login' ? "#FFFFFF" : null}><FontAwesomeIcon icon={faUser} size="1x" />&nbsp;Login</MenuItem></Link>
                         </MenuList>
                     </Menu>
-                    <Link to="/"><Image src={Logo} width="160px" height="42px"fit="cover" draggable="false"/></Link>
+                    <Link to="/"><Image src={Logo} width="160px" height="42px" fit="cover" draggable="false" /></Link>
                     <Link to="/cart">
                         <HStack px='10px'>
                             {cartCount > 0 ? (
                                 <Text
-                                color="#EDEFEE"
-                                padding="0.1rem 0.45rem 0.2rem"
-                                position="relative"
-                                marginTop="-2rem"
-                                marginRight="-1rem"
-                                backgroundColor="#FC2063"
-                                borderRadius="9px 8px 0px 9px"
-                                fontSize={{ base: '0.6rem', md: '1rem' }}
-                                fontWeight="bold"
+                                    color="#EDEFEE"
+                                    padding="0.1rem 0.45rem 0.2rem"
+                                    position="relative"
+                                    marginTop="-2rem"
+                                    marginRight="-1rem"
+                                    backgroundColor="#FC2063"
+                                    borderRadius="9px 8px 0px 9px"
+                                    fontSize={{ base: '0.6rem', md: '1rem' }}
+                                    fontWeight="bold"
                                 >{cartCount}</Text>
                             ) : null}
-                            <FontAwesomeIcon icon={faBasketShopping} color="#333333" size="2x"/>
+                            <FontAwesomeIcon icon={faBasketShopping} color="#333333" size="2x" />
                         </HStack>
                     </Link>
                 </HStack>

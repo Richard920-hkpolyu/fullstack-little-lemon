@@ -11,17 +11,21 @@ const ScreenSizeProvider = ({ children }) => {
   const fireConfetti = useConfetti();
 
   const [page, setPage] = useState('');
-
+  const [place, setPlace] = useState(0);
   const contextValue = useMemo(
     () => ({
       fireConfetti,
       page,
       setPage,
+      place,
+      setPlace,
     }),
     [
       fireConfetti,
       page,
       setPage,
+      place,
+      setPlace,
     ]
   );
   return (

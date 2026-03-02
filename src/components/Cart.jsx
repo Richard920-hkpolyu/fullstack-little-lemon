@@ -26,13 +26,18 @@ import { useDispatch, useSelector } from 'react-redux';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
 import { clearCart } from './CartSlice';
-const CustomToastDescription = ({ success }) => {
+
+const CustomToastDescription = ({ success,place }) => {
+    const messages = {
+        0: "Your dine-in order has been successfully placed!",
+        1: "Your takeout order has been successfully placed!",
+        2: "Your delivery order has been successfully placed!"
+    };
     return (
         <Text fontSize="lg" fontStyle="italic" lineHeight="1.5">
             {success ? (
                 <>
-                    Your order has been successfully placed!<br />
-                    Your food will be delivered in 10 mins.
+                    {messages[place]}
                 </>
             ) : (
                 <>
@@ -47,6 +52,7 @@ const CustomToastDescription = ({ success }) => {
 const Cart = () => {
     const [totalPrice, setTotalPrice] = useState(0);
     const [totalCount, setTotalCount] = useState(0);
+    const { place } = useScreenSize();
     const [confirm, setConfirm] = useState(false);
     const { fireConfetti } = useScreenSize();
     const { submit } = useSubmit();
@@ -120,7 +126,7 @@ const Cart = () => {
             dispatch(clearCart());
             toast({
                 title: <Heading size="md" fontWeight="semibold" lineHeight="1.5">Order Placed.</Heading>,
-                description: <CustomToastDescription success />,
+                description: <CustomToastDescription success={true} place={place} />,
                 status: "success",
                 duration: 5000,
                 isClosable: true,
